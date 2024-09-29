@@ -30,7 +30,8 @@ def save_image_and_encoding(name, surname, image_data):
     image_data = base64.b64decode(encoded)
     
     # Save the image
-    image_path = f"C:/faceDetection/face_rec/app/images/{name}_{surname}.jpg"
+    image_path = f"images/{name}_{surname}.jpg"
+
     with open(image_path, 'wb') as f:
         f.write(image_data)
     
@@ -50,7 +51,8 @@ def save_image_and_encoding(name, surname, image_data):
                         WHERE users.name = %s AND users.surname = %s
                         """, (name, surname))
             
-            userExist = cursor.fetchone()  # Fetch one result
+            # Fetch one result
+            userExist = cursor.fetchone()
 
             if userExist:
                 cursor.close()
@@ -66,7 +68,8 @@ def save_image_and_encoding(name, surname, image_data):
 
             user_id = cursor.fetchone()[0]
 
-            encoding_binary = encodings[0].tobytes()  # Convert numpy array to bytes
+            # Convert numpy array to bytes
+            encoding_binary = encodings[0].tobytes()
 
             cursor.execute("""
                 INSERT INTO face_images (user_id, encoding)
