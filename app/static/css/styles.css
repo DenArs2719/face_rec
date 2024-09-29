@@ -1,82 +1,98 @@
 /* styles.css */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #f3f4f6, #e2e8f0);
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
     padding: 0;
 }
 
 .container {
-    width: 400px;
-    margin: 100px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90vw; /* Default width is 90% of the viewport */
+    max-width: 600px; /* Max width of the form */
 }
 
-.container:hover {
-    transform: translateY(-5px);
-}
-
-h1 {
+h2 {
     text-align: center;
-    color: #333;
-    margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 15px;
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #555;
-}
-
-input[type="text"],
-input[type="file"] {
+    margin: 10px 0 5px;
+    font-size: 1rem;
     width: 100%;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
 }
 
-input[type="text"]:focus,
-input[type="file"]:focus {
-    border-color: #4f46e5;  /* Dark blue color on focus */
-    outline: none;
-    box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);  /* Subtle glow */
-}
-
-.submit-btn {
+input[type="text"], input[type="file"] {
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     width: 100%;
-    padding: 12px;
-    background-color: #4f46e5;
+    max-width: 400px; /* Max width for text fields */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 4px;
     cursor: pointer;
-    font-size: 18px;
-    transition: background-color 0.3s, transform 0.3s;
 }
 
-.submit-btn:hover {
-    background-color: #4338ca;  /* Darken on hover */
-    transform: translateY(-2px);
+button:hover {
+    background-color: #0056b3;
 }
 
-.submit-btn:active {
-    transform: translateY(0);  /* Button press effect */
+video {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
 #message {
-    font-size: 1.2em;
+    color: green;
     font-weight: bold;
-    margin-top: 10px;
+    text-align: center;
+}
+
+#registerButton {
+    margin-top: 15px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    .container {
+        width: 95vw;
+        max-width: 400px; /* Make the form narrower on smaller screens */
+    }
+    
+    label, input[type="text"], button, video {
+        font-size: 0.9rem; /* Adjust font size for small screens */
+    }
+    
+    button {
+        width: 100%;
+    }
 }
