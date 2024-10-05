@@ -11,10 +11,10 @@
         <h2>Registration Form</h2>
         
         <form id="registerForm" method="POST">
-            <label for="name">Name:</label>
+                <label for="name">Name:</label>
             <input type="text" id="name" name="name" required><br>
 
-            <label for="surname">Surname:</label>
+                <label for="surname">Surname:</label>
             <input type="text" id="surname" name="surname" required><br>
 
             <!-- Camera section -->
@@ -43,7 +43,7 @@
     
         // Access the user's camera
         navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-            video.srcObject = stream;
+                video.srcObject = stream;
         });
     
         // Dynamically set the video element size based on screen width

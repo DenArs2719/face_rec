@@ -19,6 +19,23 @@ def init_db():
         print(f"Database connection error: {e}")
         return None
 
+def is_static_image(face_encoding, frame, face_location):
+    # Here, implement a simple heuristic to determine if the detected face is static
+    # For example, check for image quality or flatness
+    # This is a placeholder for more sophisticated checks
+    top, right, bottom, left = face_location
+    detected_face = frame[top:bottom, left:right]
+    
+    # Convert the detected face to grayscale
+    gray_face = cv2.cvtColor(detected_face, cv2.COLOR_BGR2GRAY)
+
+    # Check if the face is too uniform, which might indicate a photo
+    mean_face_intensity = np.mean(gray_face)
+
+    # A simple threshold for determining if the face is too flat/uniform
+    return mean_face_intensity > 130  # You might need to adjust this threshold
+
+
 def load_known_faces_from_db(conn):
     known_faces = {}
     cursor = conn.cursor()
@@ -58,16 +75,17 @@ def recognize_faces(known_faces):
         face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
 
         for face_encoding, face_location in zip(face_encodings, face_locations):
-            # compare with faces which we load from db
+            # Check if the detected face is likely a static image
+            if is_static_image(face_encoding, frame, face_location):
+                continue
+
             matches = face_recognition.compare_faces(list(known_faces.values()), face_encoding)
             name = "Unknown"
             
-            # Checking to see if there's even one match
             if any(matches):
                 first_match_index = matches.index(True)
                 name = list(known_faces.keys())[first_match_index]
 
-            # Draw a frame around the face and a name
             top, right, bottom, left = face_location
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
             cv2.putText(frame, name, (left, top - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
@@ -80,7 +98,7 @@ def recognize_faces(known_faces):
     cap.release()
     cv2.destroyAllWindows()
 
-# connect to db
+# Connect to the database and run face recognition
 conn = init_db()
 
 if conn:
