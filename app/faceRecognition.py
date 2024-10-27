@@ -60,8 +60,9 @@ def load_known_faces_from_db(conn):
         full_name = f"{name} {surname}"
 
         if full_name not in known_faces:
-            known_faces[full_name] = encoding
+            known_faces[full_name] = encoding         
 
+    conn.close()
     return known_faces
 
 # main function for face detection
