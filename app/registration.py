@@ -5,15 +5,19 @@ import face_recognition
 import psycopg2
 import numpy as np
 from exception import MultipleFacesDetectedError, UserAlreadyExistsError
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 
+load_dotenv()  # Load environment variables from .env file
+
 DB_PARAMS = {
-    'dbname': 'postgres',
-    'user': 'postgres',
-    'password': 'toor',
-    'host': 'localhost',
-    'port': '5432'
+    'dbname': os.getenv('DB_NAME'),
+    'user': os.getenv('DB_USER'),
+    'password': os.getenv('DB_PASSWORD'),
+    'host': os.getenv('DB_HOST'),
+    'port': os.getenv('DB_PORT')
 }
 
 def init_db():
