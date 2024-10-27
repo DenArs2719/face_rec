@@ -4,7 +4,7 @@ import os
 import face_recognition
 import psycopg2
 import numpy as np
-from exception import UserAlreadyExistsError
+from exception import MultipleFacesDetectedError, UserAlreadyExistsError
 
 app = Flask(__name__)
 
@@ -24,7 +24,7 @@ def init_db():
         print(f"Error connecting to database: {e}")
         return None
 
-def save_image_and_encoding(name, surname, image_data):
+def save_image_and_encoding(name, surname, pesel, image_data):
     # Decode the image data
     header, encoded = image_data.split(',', 1)
     image_data = base64.b64decode(encoded)
@@ -39,19 +39,28 @@ def save_image_and_encoding(name, surname, image_data):
     image = face_recognition.load_image_file(image_path)
     encodings = face_recognition.face_encodings(image)
 
+    # Check if there are no faces or multiple faces
+    if len(encodings) == 0:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        raise ValueError("No face detected. Please upload an image with a clear face.")
+    elif len(encodings) > 1:
+        if os.path.exists(image_path):
+            os.remove(image_path)
+        raise MultipleFacesDetectedError("Multiple faces detected. Please upload an image with only one face.")
+
+    # If exactly one face is detected, proceed with saving the encoding
     if encodings:
-        # Save encoding to database
         conn = init_db()
         if conn:
             cursor = conn.cursor()
 
             cursor.execute("""
-                        SELECT users.name, users.surname
+                        SELECT users.name, users.surname, users.pesel
                         FROM users
-                        WHERE users.name = %s AND users.surname = %s
-                        """, (name, surname))
+                        WHERE users.name = %s AND users.surname = %s AND users.pesel = %s
+                        """, (name, surname,pesel))
             
-            # Fetch one result
             userExist = cursor.fetchone()
 
             if userExist:
@@ -60,11 +69,10 @@ def save_image_and_encoding(name, surname, image_data):
                     os.remove(image_path)
                 raise UserAlreadyExistsError(f"User {name} {surname} already exists.")
                 
-
             cursor.execute("""
-                INSERT INTO users (name, surname)
-                VALUES (%s, %s) RETURNING id
-            """, (name, surname))
+                INSERT INTO users (name, surname, pesel)
+                VALUES (%s, %s, %s) RETURNING id
+            """, (name, surname, pesel))
 
             user_id = cursor.fetchone()[0]
 
@@ -85,12 +93,28 @@ def register():
     if request.method == 'POST':
         name = request.form['name']
         surname = request.form['surname']
+        pesel = request.form['pesel']
         image_data = request.form['image']
 
-        save_image_and_encoding(name, surname, image_data)
+        save_image_and_encoding(name, surname,pesel, image_data)
         return "Registration successful!"
 
     return render_template('register.html')
+
+
+@app.errorhandler(UserAlreadyExistsError)
+def handle_value_error(e):
+    return render_template('error.html', error_message=str(e)), 400
+
+@app.errorhandler(MultipleFacesDetectedError)
+def handle_multiple_faces_error(e):
+    return render_template('error.html', error_message=str(e)), 400
+
+
+@app.errorhandler(ValueError)
+def handle_multiple_faces_error(e):
+    return render_template('error.html', error_message=str(e)), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)
