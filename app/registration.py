@@ -10,7 +10,8 @@ import os
 
 app = Flask(__name__)
 
-load_dotenv()  # Load environment variables from .env file
+# Load environment variables from .env file
+load_dotenv() 
 
 DB_PARAMS = {
     'dbname': os.getenv('DB_NAME'),
